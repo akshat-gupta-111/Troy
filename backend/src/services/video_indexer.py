@@ -66,9 +66,14 @@ class VideoIndexerService:
             'no_warnings' : False,
             'extractor_args' : {'youtube' : {'player_client' : ['android', 'web']}},
             "http_headers" : {
-                'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36'
+                'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36'
             }
         }
+
+        # If deployed on cloud (Render/AWS), YouTube blocks data center IPs. 
+        # Using an exported cookies.txt bypasses this.
+        if os.path.exists("cookies.txt"):
+            ydlp_opts['cookiefile'] = "cookies.txt"
 
         try :
             with yt_dlp.YoutubeDL(ydlp_opts) as ydl:
