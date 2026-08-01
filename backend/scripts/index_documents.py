@@ -45,7 +45,7 @@ def index_docs():
 
     required_vars=[
         'AZURE_OPENAI_ENDPOINT',
-        'AZURE_OPENDAI_API_KEY',
+        'AZURE_OPENAI_API_KEY',
         'AZURE_SEARCH_ENDPOINT',
         'AZURE_SEARCH_API_KEY',
         'AZURE_SEARCH_INDEX_NAME'
@@ -142,5 +142,5 @@ def index_docs():
             logger.warning("Nop documents are processed.")
 
 
-if __file__ == "__main__":
+if __name__ == "__main__":
     index_docs()
