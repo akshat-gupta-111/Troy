@@ -24,19 +24,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && \
     rm -rf /var/lib/apt/lists/*
 
 
-RUN groupadd --system --gid 999 appuser && \
-    useradd --system --gid 999 --uid 999 --create-home appuser
-
-
 ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONUNBUFFERED=1
 
 COPY --from=builder /app/.venv /app/.venv
 
 COPY . .
-
-
-USER appuser
 
 
 EXPOSE 8000
