@@ -108,30 +108,30 @@ def audit_content_node(state: VideoAuditState) -> Dict[str, Any]:
     retrieved_rules = "\n\n".join([doc.page_content for doc in docs])
 
     system_prompt = f"""
-                    You are a senior brand compliance auditor.
-                    OFFICIAL REGULATORY RULES:
-                    {retrieved_rules}
-                    INSTRUCTIONS:
-                    1. Analyze the Transcript and OCT text below.
-                    2. Identify ANY violations of rules.
-                    3. return strictly JSON in the following format.
-                    {
-                        {
-                            "compliance_results":[
-                                {{
-                                "category" : "Claim Validation",
-                                "severity" : "CRITICAL",
-                                "description" : "Explanation of the violation..."
-                                }}
-                            ],
-                            "status" :"FAIL",
-                            "final_report" : "Summary of findings ..."
-                        }
-                    }
+    You are a Senior Brand Compliance Auditor.
+    
+    OFFICIAL REGULATORY RULES:
+    {retrieved_rules}
+    
+    INSTRUCTIONS:
+    1. Analyze the Transcript and OCR text below.
+    2. Identify ANY violations of the rules.
+    3. Return strictly JSON in the following format:
+    
+    {{
+        "compliance_results": [
+            {{
+                "category": "Claim Validation",
+                "severity": "CRITICAL",
+                "description": "Explanation of the violation..."
+            }}
+        ],
+        "status": "FAIL", 
+        "final_report": "Summary of findings..."
+    }}
 
-                    If no violations are found, set "status" to "PASS" and "compliance_result" to [].
-
-                    """
+    If no violations are found, set "status" to "PASS" and "compliance_results" to [].
+    """
     user_message = f"""
                     VIDEO_METADATA : {state.get('video_metadata', {})}
                     TRANSCRIPT : {transcript}
@@ -145,11 +145,13 @@ def audit_content_node(state: VideoAuditState) -> Dict[str, Any]:
         content = response.content 
 
         if "```" in content:
-            content = re.search(r"```(?:json)?(.?)", content, re.DOTALL).group(1)
+            match = re.search(r"```(?:json)?(.*?)```", content, re.DOTALL)
+            if match:
+                content = match.group(1)
         audit_data = json.loads(content.strip())
 
         return {
-            "compliance_results" : audit_data.get("compliance_result", []),
+            "compliance_results" : audit_data.get("compliance_results", []),
             "final_status" : audit_data.get("status", "FAIL"),
             "final_report" : audit_data.get("final_report", "no report generated")
         }
