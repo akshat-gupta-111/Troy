@@ -20,7 +20,8 @@ FROM python:3.13-slim AS runner
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && \
+# Install ffmpeg (video processing) and nodejs (for yt-dlp JS challenge solving)
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg nodejs && \
     rm -rf /var/lib/apt/lists/*
 
 
