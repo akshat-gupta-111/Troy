@@ -64,7 +64,7 @@ class VideoIndexerService:
             "outtmpl" : output_path,
             'quiet' : False,
             'no_warnings' : False,
-            'extractor_args' : {'youtube' : {'player_client' : ['android', 'web']}},
+            'extractor_args' : {'youtube' : {'player_client' : ['ios', 'tv', 'web']}},
             "http_headers" : {
                 'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36'
             }
