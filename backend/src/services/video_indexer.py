@@ -73,7 +73,22 @@ class VideoIndexerService:
         # If deployed on cloud (Render/AWS), YouTube blocks data center IPs. 
         # Using an exported cookies.txt bypasses this.
         if os.path.exists("cookies.txt"):
-            ydlp_opts['cookiefile'] = "cookies.txt"
+            import tempfile
+            import shutil
+            logger.info("Found cookies.txt in root directory! Copying to a writable temp file to prevent Permission Denied errors.")
+            try:
+                # Render mounts secret files as read-only. yt-dlp requires write access to update session cookies.
+                temp_cookie_fd, temp_cookie_path = tempfile.mkstemp(suffix=".txt")
+                with os.fdopen(temp_cookie_fd, 'wb') as f_out:
+                    with open("cookies.txt", 'rb') as f_in:
+                        f_out.write(f_in.read())
+                
+                ydlp_opts['cookiefile'] = temp_cookie_path
+                logger.info(f"Successfully injected cookies into yt-dlp from: {temp_cookie_path}")
+            except Exception as cookie_err:
+                logger.error(f"Failed to process cookies.txt: {cookie_err}")
+        else:
+            logger.warning("No cookies.txt file found. yt-dlp may fail with a bot detection error on cloud servers.")
 
         try :
             with yt_dlp.YoutubeDL(ydlp_opts) as ydl:
